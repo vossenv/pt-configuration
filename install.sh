@@ -41,13 +41,13 @@ For Java, you may use openjdk 8:
     sudo apt-get -y install openjdk-8-jdk
 
 usage:
-    ./install.sh [-h] [-p] [-n] [-f]
+    ./install.sh [-h] [-p] [-n] [-y]
 
 where:
     -h, --help  show this help text
     -p set port number
     -n set service name
-    -n yes to all prompts\n\n"
+    -y yes to all prompts\n\n"
 
 
 while [[ $# -gt 0 ]]; do
@@ -79,7 +79,10 @@ while [[ $# -gt 0 ]]; do
                 shift # past value
   esac
 done
-
+echo
+echo "Profit Trailer service installer for Ubuntu (2021)"
+echo "Source: https://github.com/vossenv/pt-configuration"
+echo
 if ! [ "${port}" ]; then
     while true; do
         read -p "Enter desired port (please make sure it is free)? " port
