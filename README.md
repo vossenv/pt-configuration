@@ -1,21 +1,25 @@
 
 # Profit Trailer Setup (Ubuntu)
 
-Prerequisites: 
+**Before you begin**:
+	Make sure your ports are configured.  You may want to enable UFW (don't forget to allow ssh traffic), and forward a range of ports for your PT bots.  More information on port forwarding in Ubuntu can be found here:
+	[https://www.digitalocean.com/community/tutorials/how-to-set-up-a-firewall-with-ufw-on-ubuntu-18-04](https://www.digitalocean.com/community/tutorials/how-to-set-up-a-firewall-with-ufw-on-ubuntu-18-04)
+
+**Prerequisites**: 
 - java 8
 - unzip (will be installed by script)
 
 To download:
 
-`wget -O install.sh https://git.io/JGm96;` Or `curl -o pi-shrink.sh https://git.io/JGm96;`
+	`wget -O install.sh https://git.io/JGm96;` Or `curl -o pi-shrink.sh https://git.io/JGm96;`
 
 Make it executable
 
-`chmod +x install.s.sh`
+	`chmod +x install.sh`
 
 Run the script!
 
-`sudo ./install.sh`
+	`sudo ./install.sh`
 
 Additional options:
 ```
@@ -29,8 +33,14 @@ where:
 	-y yes to all prompts
 ```
 
+**Important Note**
+The profit trailer ports should be set from *within* the application.  While this setup gives your service name a port number for your convenience, it is ultimately up to you to configure the PT bot to run on the port you specify during setup.  While this can be overridden on the command line, best practice is to do change it as recommended.  Hence, the initial setup must be completed at:
 
-Example output:
+http://localhost:8081  OR http://{server_ip/server_dns}:8081
+
+Before the port can be changed to your target.
+
+**Example output**:
 
 ```
 vagrant@ubuntu2004:/ptconfig$ ./install.sh
