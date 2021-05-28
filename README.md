@@ -30,11 +30,10 @@ Run the script!
 Additional options:
 ```
 usage:
-	./install.sh [-h] [-p] [-n] [-y]  
+	./install.sh [-h] [-n] [-y]  
 
 where:
 	-h, --help show this help text
-	-p set port number
 	-n set service name
 	-y yes to all prompts
 ```
