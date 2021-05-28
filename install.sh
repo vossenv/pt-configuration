@@ -19,6 +19,22 @@ function check_name() {
     fi
 }
 
+function download_pt(){
+    if ! test -f "ProfitTrailer.zip"; then
+        echo "Downloading Profit Trailer..."
+        wget -O ProfitTrailer.zip "https://download.profittrailer.com/ProfitTrailer.zip"
+    fi
+}
+
+function extract_pt(){
+    echo "Install unzip..."
+    sudo apt-get -y install unzip -qq
+
+    echo "Create directory ${1}...."
+    mkdir -p $1
+    unzip -o -j ProfitTrailer.zip -d $1 
+}
+
 
 usage="
 
@@ -54,16 +70,19 @@ while [[ $# -gt 0 ]]; do
         --help|-h)
             printf "$usage"
             exit
-        ;;
+            ;;
         -y)
             force=1
-        shift ;;
+            shift ;;
         -n)
             result=$(check_name $2)
             ! [[ $result == '0' ]] && echo $result && exit
             svc_name=$2
             shift
-        shift ;;
+            shift ;;
+        --update|-u)
+            update=1
+            shift ;;
         *)
             echo "Parameter '$1' not recognized"
             exit
@@ -79,8 +98,7 @@ Source: https://github.com/vossenv/pt-configuration
 Version 1.0
 ----------------------------------------------------
 "
-
-
+[ "${update}" ] && echo "$(tput setaf 1)**UPDATE MODE**$(tput sgr 0)" && echo
 if ! [ "${svc_name}" ]; then
     while true; do
         read -p "Enter service name (no spaces): " svc_name
@@ -88,6 +106,11 @@ if ! [ "${svc_name}" ]; then
         [[ $result == '0' ]] && break
         echo $result
     done
+fi
+
+if [ "${update}" ]; then
+    echo "Update - not yet implemented"
+    exit
 fi
 
 install_dir="${PWD}/$svc_name"
@@ -111,17 +134,8 @@ if test -e $install_dir; then
     rm -rf $install_dir
 fi
 
-if ! test -f "ProfitTrailer.zip"; then
-    echo "Downloading Profit Trailer..."
-    wget -O ProfitTrailer.zip "https://download.profittrailer.com/ProfitTrailer.zip"
-fi
-
-echo "Install unzip..."
-sudo apt-get -y install unzip -qq
-
-echo "Create directory ${install_dir}...."
-mkdir -p $install_dir
-unzip -j ProfitTrailer.zip -d $install_dir
+download_pt
+extract_pt $install_dir
 
 sudo chown root -R $install_dir
 sudo chmod u+rwx -R $install_dir
