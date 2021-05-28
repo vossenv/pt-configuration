@@ -56,12 +56,13 @@ You can see what port the bot has started on by looking at that log for the serv
 'sudo journalctl -f -u [service_name]'
 
 usage:
-./install.sh [-h] [-n] [-y]
+./install.sh [--help|-h] [-n] [-y] [--update|-u]
 
 where:
 -h, --help  show this help text
 -n set service name
--y yes to all prompts\n\n"
+-y yes to all prompts
+-u update (will prompt for service name)\n\n"
 
 
 while [[ $# -gt 0 ]]; do
@@ -108,13 +109,30 @@ if ! [ "${svc_name}" ]; then
     done
 fi
 
+install_dir="${PWD}/$svc_name"
+svc_path="/etc/systemd/system/${svc_name}.service"
+
 if [ "${update}" ]; then
-    echo "Update - not yet implemented"
+    if ! test -f $svc_path; then
+        echo "Service by name of ${svc_name} does not exist or was not registered"
+        exit
+    fi
+    install_dir=$(cat $svc_path| grep -Po '(?<=WorkingDirectory=).*')
+
+    echo "Service ${svc_name} will be updated and some files in ${install_dir} replaced."
+    echo "This will not affect your configuration data."
+    echo
+
+    ! [ "${force}" ] && confirm
+
+    rm -f "ProfitTrailer.zip"
+    download_pt
+    echo "Updating: $svc_name..."
+    extract_pt $install_dir
+    echo "Update complete!"
+    echo
     exit
 fi
-
-install_dir="${PWD}/$svc_name"
-svc="$svc_name.service"
 
 echo "----------------------------------------------------"
 echo "The following service will be installed: "
@@ -160,9 +178,9 @@ To check status service:
     sudo service $svc_name status
 
 To enable the service:
-    sudo systemctl enable $svc
+    sudo systemctl enable $svc_name.service
 To disable the service:
-    sudo systemctl disable $svc
+    sudo systemctl disable $svc_name.service
 
 To run the jar manually:
     ensure the service is stopped
@@ -175,8 +193,8 @@ To watch the service output:
 
 EOF
 
-echo "Create the service: /etc/systemd/system/$svc..."
-sudo tee /etc/systemd/system/$svc <<-EOF > /dev/null
+echo "Create the service: $svc_path..."
+sudo tee $svc_path <<-EOF > /dev/null
 #!/usr/bin/env bash
 [Unit]
 Description=Profit Trailer - $svc_name
@@ -197,7 +215,7 @@ EOF
 
 echo "Enable the service..."
 sudo systemctl daemon-reload
-sudo systemctl enable $svc
+sudo systemctl enable $svc_name.service
 echo "
 ----------------------------------------------------
  $(tput setaf 5)Service $svc_name installed!$(tput sgr 0)
