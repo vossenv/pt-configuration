@@ -41,7 +41,7 @@ where:
 
 Run the script with no user interaction:
 
-`sudo ./install.sh` -n pt-service-name -y
+`sudo ./install.sh -n pt-service-name -y`
 
 **Important Note**
 
