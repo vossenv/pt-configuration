@@ -9,17 +9,6 @@ function confirm() {
     esac
 }
 
-function check_port() {
-    res=$(echo $1 | grep -Po "(\D)")
-    if [ "${res}" ]; then
-        echo "Invalid character in port: '${res}'"
-        elif [ $1 -le 1024 ]; then
-        echo "Illegal port - port should be in range 1024 to 49151"
-    else
-        echo 0
-    fi
-}
-
 function check_name() {
     res=$(echo $1 | grep -Po "([^a-zA-Z\d\.\_\-])")
     if [ "${res}" ]; then
@@ -48,7 +37,7 @@ The profit trailer ports should be set from within the application (default shou
 http://localhost:8081 OR http://{server_ip/server_dns}:8081
 
 You can see what port the bot has started on by looking at that log for the service:
-`sudo journalctl -f -u {service_name}`
+'sudo journalctl -f -u [service_name]'
 
 usage:
     ./install.sh [-h] [-n] [-y]
@@ -82,10 +71,15 @@ while [[ $# -gt 0 ]]; do
                 shift # past value
   esac
 done
-echo
-echo "Profit Trailer service installer for Ubuntu (2021)"
-echo "Source: https://github.com/vossenv/pt-configuration"
-echo
+
+echo "
+----------------------------------------------------
+$(tput setaf 5)Profit Trailer service installer for Ubuntu$(tput sgr 0)
+Source: https://github.com/vossenv/pt-configuration
+Version 1.0
+----------------------------------------------------
+"
+
 
 if ! [ "${svc_name}" ]; then
     while true; do
@@ -99,19 +93,20 @@ fi
 install_dir="${PWD}/$svc_name"
 svc="$svc_name.service"
 
-echo
-echo "-------------------------------------------"
+echo "----------------------------------------------------"
 echo "The following service will be installed: "
 echo "Profit Trailer Service:"
-echo "Name: ${svc_name}"
-echo "Directory: ${install_dir}"
+echo "$(tput setaf 2)Name: ${svc_name}"
+echo "Directory: ${install_dir}$(tput sgr 0)"
 echo
+
 
 ! [ "${force}" ] && confirm
 
 if test -e $install_dir; then
     echo "Path '${install_dir}' already exists and will be overwritten, continue?"
     ! [ "${force}" ] && confirm
+    echo
     echo "Remove directory ${install_dir}..."
     rm -rf $install_dir
 fi
@@ -131,10 +126,11 @@ unzip -j ProfitTrailer.zip -d $install_dir
 sudo chown root -R $install_dir
 sudo chmod u+rwx -R $install_dir
 
+echo
 echo "Create run script..."
 sudo tee $install_dir/run.sh <<-EOF > /dev/null
 #!/usr/bin/env bash
-java -Djava.net.preferIPv4Stack=true -Dsun.stdout.encoding=UTF-8\
+/usr/bin/java -Djava.net.preferIPv4Stack=true -Dsun.stdout.encoding=UTF-8\
  -XX:+UseSerialGC -XX:+UseStringDeduplication -Xms64m -Xmx512m -XX:MaxMetaspaceSize=256m\
   -jar ProfitTrailer.jar
 EOF
@@ -188,12 +184,18 @@ EOF
 echo "Enable the service..."
 sudo systemctl daemon-reload
 sudo systemctl enable $svc
-echo
-echo "-------------------------------------------"
-echo "Service $svc_name installed!"
-echo "To start the service, run 'sudo service $svc_name start'"
-echo "Check the status with 'sudo service $svc_name status'.  If you see a java error, please ensure java is installed."
-echo
-echo "Profit Trailer will run on port 8081 or 8082 at first startup - you can change the port from within the UI."
-echo "For more commands and usage, see $install_dir/usage.txt"
-echo
+echo "
+----------------------------------------------------
+ $(tput setaf 5)Service $svc_name installed!$(tput sgr 0)
+ To start the service, run:
+    $(tput setaf 2)sudo service $svc_name start$(tput sgr 0)
+
+ To check the status, use:
+    $(tput setaf 2)sudo service $svc_name status$(tput sgr 0)
+
+ Profit Trailer will run on port 8081 or 8082 at first startup - you can change the port from within the UI.
+ To see which port this service is starting on, view the PT output for it with the command:
+    $(tput setaf 2)sudo journalctl -f -u $svc_name$(tput sgr 0)
+
+ For more commands and usage, see $(tput setaf 2)$install_dir/usage.txt$(tput sgr 0)
+ "
