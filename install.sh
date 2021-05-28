@@ -29,10 +29,12 @@ function download_pt(){
 function extract_pt(){
     echo "Install unzip..."
     sudo apt-get -y install unzip -qq
-
+    
     echo "Create directory ${1}...."
     mkdir -p $1
-    unzip -o -j ProfitTrailer.zip -d $1 
+
+    echo "Extracting..."
+    unzip -o -j ProfitTrailer.zip -d $1
 }
 
 
@@ -56,13 +58,14 @@ You can see what port the bot has started on by looking at that log for the serv
 'sudo journalctl -f -u [service_name]'
 
 usage:
-./install.sh [--help|-h] [-n] [-y] [--update|-u]
+./install.sh [--help|-h] [-n] [-y] [--update|-u] [--remove-r]
 
 where:
 -h, --help  show this help text
 -n set service name
 -y yes to all prompts
--u update (will prompt for service name)\n\n"
+-u update (will prompt for service name)
+-r remove (will prompt for service name)\n\n"
 
 
 while [[ $# -gt 0 ]]; do
@@ -71,19 +74,22 @@ while [[ $# -gt 0 ]]; do
         --help|-h)
             printf "$usage"
             exit
-            ;;
+        ;;
         -y)
             force=1
-            shift ;;
+        shift ;;
         -n)
             result=$(check_name $2)
             ! [[ $result == '0' ]] && echo $result && exit
             svc_name=$2
             shift
-            shift ;;
+        shift ;;
         --update|-u)
             update=1
-            shift ;;
+        shift ;;
+        --remove|-r)
+            remove=1
+        shift ;;
         *)
             echo "Parameter '$1' not recognized"
             exit
@@ -100,6 +106,9 @@ Version 1.0
 ----------------------------------------------------
 "
 [ "${update}" ] && echo "$(tput setaf 1)**UPDATE MODE**$(tput sgr 0)" && echo
+[ "${remove}" ] && echo "$(tput setaf 1)**REMOVAL MODE**$(tput sgr 0)" && echo
+
+
 if ! [ "${svc_name}" ]; then
     while true; do
         read -p "Enter service name (no spaces): " svc_name
@@ -118,13 +127,13 @@ if [ "${update}" ]; then
         exit
     fi
     install_dir=$(cat $svc_path| grep -Po '(?<=WorkingDirectory=).*')
-
-    echo "Service ${svc_name} will be updated and some files in ${install_dir} replaced."
+    
+    echo "Service '${svc_name}' will be updated and some files in '${install_dir}' replaced."
     echo "This will not affect your configuration data."
     echo
-
+    
     ! [ "${force}" ] && confirm
-
+    
     rm -f "ProfitTrailer.zip"
     download_pt
     echo "Updating: $svc_name..."
@@ -134,7 +143,31 @@ if [ "${update}" ]; then
     exit
 fi
 
-echo "----------------------------------------------------"
+if [ "${remove}" ]; then
+    if ! test -f $svc_path; then
+        echo "Service by name of ${svc_name} does not exist or was not registered"
+        exit
+    fi
+    install_dir=$(cat $svc_path| grep -Po '(?<=WorkingDirectory=).*')
+    
+    echo "Service '${svc_name}' will be removed.  Data in: '${install_dir}'. will NOT be deleted."
+    echo
+    
+    ! [ "${force}" ] && confirm
+    
+    echo "Stop service..."
+    sudo service $svc_name stop
+    echo "Disable service..."
+    sudo systemctl disable $svc_name.service
+    echo "Remove service config..."
+    sudo rm $svc_path
+    echo "Reload daemon..."
+    sudo systemctl daemon-reload
+    echo "Removal complete!"
+    exit
+fi
+
+echo ""
 echo "The following service will be installed: "
 echo "Profit Trailer Service:"
 echo "$(tput setaf 2)Name: ${svc_name}"
@@ -144,8 +177,8 @@ echo
 
 ! [ "${force}" ] && confirm
 
-if test -e $install_dir; then
-    echo "Path '${install_dir}' already exists and will be overwritten, continue?"
+if (test -e $install_dir) || (test -f $svc_path); then
+    echo "Service by name '${svc_name}' or path '${install_dir}' already exists and will be overwritten. $(tput setaf 1)ALL DATA WILL BE LOST!$(tput sgr 0)"
     ! [ "${force}" ] && confirm
     echo
     echo "Remove directory ${install_dir}..."
