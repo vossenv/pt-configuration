@@ -39,6 +39,10 @@ where:
 	-y yes to all prompts
 ```
 
+Run the script with no user interaction:
+
+`sudo ./install.sh` -n pt-service-name -y
+
 **Important Note**
 
 The profit trailer ports should be set from within the application (default should be 8081/8082). 
