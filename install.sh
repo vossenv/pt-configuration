@@ -26,13 +26,13 @@ Profit Trailer service installer for Ubuntu
 
 You will still need to configure port forwarding and ensure that java is installed.
 For Java, you may use openjdk 8:
-    sudo apt-get update
-    sudo apt-get -y install openjdk-8-jdk
+sudo apt-get update
+sudo apt-get -y install openjdk-8-jdk
 
 Please see: https://github.com/vossenv/pt-configuration for more information.
 
 Important Note:
-The profit trailer ports should be set from within the application (default should be 8081/8082). 
+The profit trailer ports should be set from within the application (default should be 8081/8082).
 
 http://localhost:8081 OR http://{server_ip/server_dns}:8081
 
@@ -40,36 +40,36 @@ You can see what port the bot has started on by looking at that log for the serv
 'sudo journalctl -f -u [service_name]'
 
 usage:
-    ./install.sh [-h] [-n] [-y]
+./install.sh [-h] [-n] [-y]
 
 where:
-    -h, --help  show this help text
-    -n set service name
-    -y yes to all prompts\n\n"
+-h, --help  show this help text
+-n set service name
+-y yes to all prompts\n\n"
 
 
 while [[ $# -gt 0 ]]; do
-  key=$1
-  case $key in
-       --help|-h)
-                printf "$usage"
-                exit
-                ;;
-              -y)
-                force=1
-                shift ;;
-              -n)
-                result=$(check_name $2)
-                ! [[ $result == '0' ]] && echo $result && exit
-                svc_name=$2
-                shift
-                shift ;;
-              *)
-                echo "Parameter '$1' not recognized"
-                exit
-                shift # past argument
-                shift # past value
-  esac
+    key=$1
+    case $key in
+        --help|-h)
+            printf "$usage"
+            exit
+        ;;
+        -y)
+            force=1
+        shift ;;
+        -n)
+            result=$(check_name $2)
+            ! [[ $result == '0' ]] && echo $result && exit
+            svc_name=$2
+            shift
+        shift ;;
+        *)
+            echo "Parameter '$1' not recognized"
+            exit
+            shift # past argument
+            shift # past value
+    esac
 done
 
 echo "
@@ -198,4 +198,4 @@ echo "
     $(tput setaf 2)sudo journalctl -f -u $svc_name$(tput sgr 0)
 
  For more commands and usage, see $(tput setaf 2)$install_dir/usage.txt$(tput sgr 0)
- "
+"
