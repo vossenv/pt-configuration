@@ -17,15 +17,15 @@ sudo apt-get -y install openjdk-8-jdk
 
 To download:
 
-	`wget -O install.sh https://git.io/JGm96;` Or `curl -o pi-shrink.sh https://git.io/JGm96;`
+`wget -O install.sh https://git.io/JGm96;` Or `curl -o pi-shrink.sh https://git.io/JGm96;`
 
 Make it executable
 
-	`chmod +x install.sh`
+`chmod +x install.sh`
 
 Run the script!
 
-	`sudo ./install.sh`
+`sudo ./install.sh`
 
 Additional options:
 ```
