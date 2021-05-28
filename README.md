@@ -9,6 +9,12 @@
 - java 8
 - unzip (will be installed by script)
 
+Java 8 can be installed as follows:
+```
+    sudo apt-get update
+    sudo apt-get -y install openjdk-8-jdk
+```
+
 To download:
 
 	`wget -O install.sh https://git.io/JGm96;` Or `curl -o pi-shrink.sh https://git.io/JGm96;`
