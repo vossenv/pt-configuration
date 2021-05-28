@@ -193,7 +193,7 @@ Description=Profit Trailer on port $port ($svc_name)
 [Service]
 User=root
 
-WorkingDirectory=$dir
+WorkingDirectory=$install_dir
 ExecStart=/bin/bash $install_dir/run.sh
 SuccessExitStatus=143
 TimeoutStopSec=10
