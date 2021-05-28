@@ -43,23 +43,18 @@ For Java, you may use openjdk 8:
 Please see: https://github.com/vossenv/pt-configuration for more information.
 
 Important Note:
-The profit trailer ports should be set from within the application. 
-While this setup gives your service name a port number for your convenience, 
-it is ultimately up to you to configure the PT bot to run on the port you 
-specify during setup. While this can be overridden on the command line, 
-best practice is to do change it as recommended. 
-Hence, the initial setup must be completed at:
+The profit trailer ports should be set from within the application (default should be 8081/8082). 
 
 http://localhost:8081 OR http://{server_ip/server_dns}:8081
 
-Before the port can be changed to your target.
+You can see what port the bot has started on by looking at that log for the service:
+`sudo journalctl -f -u {service_name}`
 
 usage:
-    ./install.sh [-h] [-p] [-n] [-y]
+    ./install.sh [-h] [-n] [-y]
 
 where:
     -h, --help  show this help text
-    -p set port number
     -n set service name
     -y yes to all prompts\n\n"
 
@@ -73,12 +68,6 @@ while [[ $# -gt 0 ]]; do
                 ;;
               -y)
                 force=1
-                shift ;;
-              -p)
-                result=$(check_port $2)
-                ! [[ $result == '0' ]] && echo $result && exit
-                port=$2
-                shift
                 shift ;;
               -n)
                 result=$(check_name $2)
@@ -97,14 +86,6 @@ echo
 echo "Profit Trailer service installer for Ubuntu (2021)"
 echo "Source: https://github.com/vossenv/pt-configuration"
 echo
-if ! [ "${port}" ]; then
-    while true; do
-        read -p "Enter desired port (please make sure it is free)? " port
-        result=$(check_port $port)
-        [[ $result == '0' ]] && break
-        echo $result
-    done
-fi
 
 if ! [ "${svc_name}" ]; then
     while true; do
@@ -123,7 +104,6 @@ echo "-------------------------------------------"
 echo "The following service will be installed: "
 echo "Profit Trailer Service:"
 echo "Name: ${svc_name}"
-echo "Port: ${port}"
 echo "Directory: ${install_dir}"
 echo
 
@@ -154,9 +134,9 @@ sudo chmod u+rwx -R $install_dir
 echo "Create run script..."
 sudo tee $install_dir/run.sh <<-EOF > /dev/null
 #!/usr/bin/env bash
-/usr/bin/java -Djava.net.preferIPv4Stack=true -Dsun.stdout.encoding=UTF-8\
+java -Djava.net.preferIPv4Stack=true -Dsun.stdout.encoding=UTF-8\
  -XX:+UseSerialGC -XX:+UseStringDeduplication -Xms64m -Xmx512m -XX:MaxMetaspaceSize=256m\
-  -jar $install_dir/ProfitTrailer.jar
+  -jar ProfitTrailer.jar
 EOF
 
 sudo tee $install_dir/usage.txt <<-EOF > /dev/null
@@ -189,7 +169,7 @@ echo "Create the service: /etc/systemd/system/$svc..."
 sudo tee /etc/systemd/system/$svc <<-EOF > /dev/null
 #!/usr/bin/env bash
 [Unit]
-Description=Profit Trailer on port $port ($svc_name)
+Description=Profit Trailer - $svc_name
 [Service]
 User=root
 
@@ -214,6 +194,6 @@ echo "Service $svc_name installed!"
 echo "To start the service, run 'sudo service $svc_name start'"
 echo "Check the status with 'sudo service $svc_name status'.  If you see a java error, please ensure java is installed."
 echo
-echo "Profit Trailer will run on port 8081 at first startup - you must change the port to $port from within the UI."
+echo "Profit Trailer will run on port 8081 or 8082 at first startup - you can change the port from within the UI."
 echo "For more commands and usage, see $install_dir/usage.txt"
 echo

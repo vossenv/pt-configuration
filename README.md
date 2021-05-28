@@ -41,11 +41,13 @@ where:
 
 **Important Note**
 
-The profit trailer ports should be set from *within* the application.  While this setup gives your service name a port number for your convenience, it is ultimately up to you to configure the PT bot to run on the port you specify during setup.  While this can be overridden on the command line, best practice is to do change it as recommended.  Hence, the initial setup must be completed at:
+The profit trailer ports should be set from within the application (default should be 8081/8082). 
 
-http://localhost:8081  OR http://{server_ip/server_dns}:8081
+`http://localhost:8081 OR http://{server_ip/server_dns}:8081`
 
-Before the port can be changed to your target.
+You can see what port the bot has started on by looking at that log for the service:
+
+`sudo journalctl -f -u {service_name}`
 
 **Example output**:
 
