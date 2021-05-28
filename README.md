@@ -57,14 +57,12 @@ vagrant@ubuntu2004:/ptconfig$ ./install.sh
 Profit Trailer service installer for Ubuntu (2021)
 Source: https://github.com/vossenv/pt-configuration
 
-Enter desired port (please make sure it is free)? 9090
 Enter service name (no spaces): pt_service_1
 
 -------------------------------------------
 The following service will be installed:
 Profit Trailer Service:
 Name: pt_service_1
-Port: 9090
 Directory: /ptconfig/pt_service_1
 
 Proceed (y/n)[y]? y
@@ -97,6 +95,6 @@ Service pt_service_1 installed!
 To start the service, run 'sudo service pt_service_1 start'
 Check the status with 'sudo service pt_service_1 status'.  If you see a java error, please ensure java is installed.
 
-Profit Trailer will run on port 8081 at first startup - you must change the port to 9090 from within the UI.
+Profit Trailer will run on port 8081 or 8082 at first startup - you can change the port from within the UI.
 For more commands and usage, see /ptconfig/pt_service_1/usage.txt
 ```
