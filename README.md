@@ -30,12 +30,14 @@ Run the script!
 Additional options:
 ```
 usage:
-	./install.sh [-h] [-n] [-y]  
+    ./install.sh [--help|-h] [-n] [-y] [--update|-u] [--remove-r]
 
 where:
-	-h, --help show this help text
-	-n set service name
-	-y yes to all prompts
+    -h, --help  show this help text
+    -n set service name
+    -y yes to all prompts
+    -u update (will prompt for service name)
+    -r remove (will prompt for service name)
 ```
 
 Run the script with no user interaction:

@@ -44,8 +44,8 @@ Profit Trailer service installer for Ubuntu
 
 You will still need to configure port forwarding and ensure that java is installed.
 For Java, you may use openjdk 8:
-sudo apt-get update
-sudo apt-get -y install openjdk-8-jdk
+    sudo apt-get update
+    sudo apt-get -y install openjdk-8-jdk
 
 Please see: https://github.com/vossenv/pt-configuration for more information.
 
@@ -55,18 +55,17 @@ The profit trailer ports should be set from within the application (default shou
 http://localhost:8081 OR http://{server_ip/server_dns}:8081
 
 You can see what port the bot has started on by looking at that log for the service:
-'sudo journalctl -f -u [service_name]'
+    'sudo journalctl -f -u [service_name]'
 
 usage:
-./install.sh [--help|-h] [-n] [-y] [--update|-u] [--remove-r]
+    ./install.sh [--help|-h] [-n] [-y] [--update|-u] [--remove-r]
 
 where:
--h, --help  show this help text
--n set service name
--y yes to all prompts
--u update (will prompt for service name)
--r remove (will prompt for service name)\n\n"
-
+    -h, --help  show this help text
+    -n set service name
+    -y yes to all prompts
+    -u update (will prompt for service name)
+    -r remove (will prompt for service name)\n\n"
 
 while [[ $# -gt 0 ]]; do
     key=$1
